@@ -1,0 +1,63 @@
+﻿@page "/"
+
+
+
+<MudButton Variant="Variant.Filled" Class="ma-20" OnClick="CheckOut">
+
+    CheckOut
+
+</MudButton>
+
+
+
+@code {
+
+
+
+
+    async void CheckOut()
+    {
+        var domain = _navigator.BaseUri;
+
+        var optionsC = new CustomerCreateOptions
+            {
+                Name = "Andrea Cammarata",
+                Email = "2905ashly@livinitlarge.net",
+            };
+        var serviceC = new CustomerService();
+
+
+        var customers = await serviceC.ListAsync();
+
+        var cust = customers.Where(x => x.Email.Equals("2905ashly@livinitlarge.net")).FirstOrDefault();
+
+        if (cust == null)
+            serviceC.Create(optionsC);
+
+
+        var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>
+                {
+                  new SessionLineItemOptions
+                  {
+                    // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    Price = "price_1QJCGAKQtk0dIGpKora9yL4q",
+                    Quantity = 4,
+
+                  },
+                },
+                CustomerEmail = "2905ashly@livinitlarge.net",
+                Mode = "payment",
+                SuccessUrl = domain + "/weather",
+                CancelUrl = domain + "/Error",
+            };
+        var service = new SessionService();
+        Session session = service.Create(options);
+
+
+
+
+        _navigator.NavigateTo(session.Url);
+    }
+}
